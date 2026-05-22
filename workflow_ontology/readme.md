@@ -146,7 +146,7 @@ The ontology includes conceptual modules for:
 
 ### Ontology Overview Diagram
 
-![Exa-AToW Workflow Ontology Flowchart](flowok.png)
+![Exa-AToW Workflow Ontology Flowchart](exaatow_workflow_ontology.png)
 
 ---
 
