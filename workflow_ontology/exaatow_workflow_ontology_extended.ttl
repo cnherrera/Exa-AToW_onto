@@ -1310,3 +1310,105 @@ exa-atow:hasAlternativeRepresentation rdf:type owl:ObjectProperty ;
 # TBD: Add further documentation, versioning, annotations when needed
 ################################################################################
 
+
+# CWL specifications - COmmand line
+
+exa-atow:CommandLineTool rdf:type owl:Class ;
+    rdfs:subClassOf exa-atow:SoftwareTool ;
+    rdfs:comment "Executable command-line program with input/output bindings" .
+
+exa-atow:CommandLineBinding rdf:type owl:Class ;
+    rdfs:comment "Specification of how parameters map to command-line arguments" .
+
+exa-atow:InputBinding rdf:type owl:Class ;
+    rdfs:subClassOf exa-atow:CommandLineBinding ;
+    rdfs:comment "Maps input parameter to CLI argument with position, prefix, separator" .
+
+exa-atow:OutputBinding rdf:type owl:Class ;
+    rdfs:subClassOf exa-atow:CommandLineBinding ;
+    rdfs:comment "Specifies how to capture outputs using glob patterns or streams" .
+
+#Required Properties:
+#exa-atow:baseCommand (xsd:string)
+#exa-atow:position (xsd:integer) - Argument order
+#exa-atow:prefix (xsd:string) - Flag like "--input"
+#exa-atow:separate (xsd:boolean) - Prefix and value separate?#
+#exa-atow:itemSeparator (xsd:string) - For array values
+#exa-atow:glob (xsd:string) - Output capture pattern
+#exa-atow:loadContents (xsd:boolean) - Read file into memory
+
+################################################################################
+# Classes to describe supported languages and execution models
+################################################################################
+
+exa-atow:WorkflowLanguage rdf:type owl:Class ;
+    rdfs:label "Workflow Language"@en ;
+    rdfs:comment "A formal language or specification used to describe workflows (e.g. CWL, WDL, Nextflow DSL, NiFi Flow JSON, Python DSLs)."@en .
+
+exa-atow:ExecutionModel rdf:type owl:Class ;
+    rdfs:label "Execution Model"@en ;
+    rdfs:comment "A model describing how a workflow engine schedules and executes tasks (e.g. DAG, streaming, event-driven, batch, continuous)."@en .
+
+
+################################################################################
+# Execution language & model properties for WorkflowEngine
+################################################################################
+
+exa-atow:supportsLanguage rdf:type owl:ObjectProperty ;
+    rdfs:domain exa-atow:WorkflowEngine ;
+    rdfs:range exa-atow:WorkflowLanguage ;
+    rdfs:label "supports language"@en ;
+    rdfs:comment "Indicates which workflow language or formalism is supported by a given workflow engine (e.g. CWL, NiFi flow definition, Python-based DSL)."@en .
+
+exa-atow:hasExecutionModel rdf:type owl:ObjectProperty ;
+    rdfs:domain exa-atow:WorkflowEngine ;
+    rdfs:range exa-atow:ExecutionModel ;
+    rdfs:label "has execution model"@en ;
+    rdfs:comment "Describes the execution semantics of a workflow engine (e.g. batch, DAG-based, streaming, event-driven, actor-based)."@en .
+
+#------------------------------------------------------------------------------
+# CHECK-----!!!!!
+### Execution model metadata
+#####################################
+
+exa:supportsLanguage a owl:DatatypeProperty ;
+    rdfs:domain exa:WorkflowEngine ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Workflow language supported (CWL, Python, NiFi, etc.)" .
+
+exa:hasExecutionModel a owl:DatatypeProperty ;
+    rdfs:domain exa:WorkflowEngine ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Execution model: batch, streaming, command-line, function-call, etc." .
+
+exa:executedBy a owl:ObjectProperty ;
+    rdfs:domain exa:WorkflowStep ;
+    rdfs:range exa:WorkflowEngine .
+
+### Command binding
+
+exa:baseCommand a owl:DatatypeProperty ;
+    rdfs:domain exa:WorkflowStep ;
+    rdfs:range xsd:string .
+
+exa:bindingPrefix a owl:DatatypeProperty ;
+    rdfs:domain exa:InputParameter ;
+    rdfs:range xsd:string .
+
+exa:bindingPosition a owl:DatatypeProperty ;
+    rdfs:domain exa:InputParameter ;
+    rdfs:range xsd:integer .
+
+exa:producesFile a owl:DatatypeProperty ;
+    rdfs:domain exa:OutputParameter ;
+    rdfs:range xsd:string .
+
+### Resource constraints
+
+exa:minCores a owl:DatatypeProperty ;
+    rdfs:domain exa:ComputationalResource ;
+    rdfs:range xsd:integer .
+
+exa:minRAM a owl:DatatypeProperty ;
+    rdfs:domain exa:ComputationalResource ;
+    rdfs:range xsd:integer .
