@@ -793,7 +793,7 @@ exato-wf:requiresResourceType rdf:type owl:ObjectProperty ;
                  "Exemple : un environnement HPC peut nécessiter des ressources GPU, des nœuds à haute mémoire ou des interconnexions à haut débit."@fr .
 
 exato-wf:executedOnResource rdf:type owl:ObjectProperty ;
-    rdfs:domain exato-wf:WorkflowExecution ;
+    rdfs:domain exato-wf:Execution ;
     rdfs:label "executed on resource"@en ,
                "exécuté sur une ressource"@fr ;
     skos:definition "Associates a workflow execution with the concrete computational resource or infrastructure on which it was executed."@en ,
@@ -1274,3 +1274,5 @@ exato-wf:doi rdf:type owl:DatatypeProperty ;
                  "Identifiant d'objet numérique (DOI) associé à l'artéfact de données, le cas échéant."@fr ;
     skos:prefLabel "DOI"@en ,
                    "DOI"@fr .
+
+
