@@ -1,4 +1,4 @@
-@prefix exato-wf-cwl: <https://w3id.org/Exa-AToW/exato-wf-cwl.ttl#> .
+@prefix exato-wf-cwl: <https://raw.githubusercontent.com/cnherrera/Exa-AToW_onto/refs/heads/main/workflow_ontology/exato-wf-cwl-extension.ttl#> .
 @prefix exato-wf: <https://w3id.org/Exa-AToW/exato-wf.ttl#> .
 @prefix cwl: <https://w3id.org/cwl/cwl#> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
