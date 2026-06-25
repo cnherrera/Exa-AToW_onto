@@ -18,9 +18,12 @@
 
 inst:step_get_kinetic_energy a owl:NamedIndividual,
         exato-wf-cwl:CWLWorkflowStep,
+        exato-wf-cwl:CWLCommandLineTool,
         exato-wf:WorkflowStep ;
     rdfs:label "get_kinetic_energy"@en ;
-    exato-wf-cwl:runs inst:tool_get_kinetic_energy ;
+    exato-wf-cwl:baseCommand "python3"^^xsd:string ;
+    exato-wf-cwl:cwlClass "CommandLineTool"^^xsd:string ;
+    exato-wf-cwl:cwlVersion "v1.2"^^xsd:string ;
     exato-wf-cwl:stepID "get_kinetic_energy"^^xsd:string ;
     exato-wf:dependsOn inst:step_get_speed ;
     exato-wf:hasInputParameter inst:step_get_kinetic_energy_in_mass,
@@ -65,24 +68,6 @@ inst:step_get_speed_in_time a owl:NamedIndividual,
     exato-wf:parameterName "time"^^xsd:string ;
     exato-wf:parameterType "float"^^xsd:string .
 
-inst:tool_get_kinetic_energy a owl:NamedIndividual,
-        exato-wf-cwl:CWLCommandLineTool,
-        exato-wf:WorkflowStep ;
-    rdfs:label "get_kinetic_energy"@en ;
-    exato-wf-cwl:baseCommand "python3"^^xsd:string ;
-    exato-wf-cwl:cwlClass "CommandLineTool"^^xsd:string ;
-    exato-wf-cwl:cwlVersion "v1.2"^^xsd:string ;
-    exato-wf:commandLine "python3"^^xsd:string .
-
-inst:tool_get_speed a owl:NamedIndividual,
-        exato-wf-cwl:CWLCommandLineTool,
-        exato-wf:WorkflowStep ;
-    rdfs:label "get_speed"@en ;
-    exato-wf-cwl:baseCommand "python3"^^xsd:string ;
-    exato-wf-cwl:cwlClass "CommandLineTool"^^xsd:string ;
-    exato-wf-cwl:cwlVersion "v1.2"^^xsd:string ;
-    exato-wf:commandLine "python3"^^xsd:string .
-
 inst:step_get_kinetic_energy_in_velocity a owl:NamedIndividual,
         exato-wf-cwl:CWLInputParameter,
         exato-wf:InputParameter ;
@@ -94,9 +79,12 @@ inst:step_get_kinetic_energy_in_velocity a owl:NamedIndividual,
 
 inst:step_get_speed a owl:NamedIndividual,
         exato-wf-cwl:CWLWorkflowStep,
+        exato-wf-cwl:CWLCommandLineTool,
         exato-wf:WorkflowStep ;
     rdfs:label "get_speed"@en ;
-    exato-wf-cwl:runs inst:tool_get_speed ;
+    exato-wf-cwl:baseCommand "python3"^^xsd:string ;
+    exato-wf-cwl:cwlClass "CommandLineTool"^^xsd:string ;
+    exato-wf-cwl:cwlVersion "v1.2"^^xsd:string ;
     exato-wf-cwl:stepID "get_speed"^^xsd:string ;
     exato-wf:hasInputParameter inst:step_get_speed_in_distance,
         inst:step_get_speed_in_time ;
