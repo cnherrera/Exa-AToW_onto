@@ -261,14 +261,14 @@ Open `../../viewer/onto-viewer.html` in your browser or from the web:
 
 
 
-### Upload instance from the web (URL)
+### a. Upload instance from the web (URL)
 
 Write the URL of the instance of the workflow in "TTL URL":  
 
-https://cnherrera.github.io/Exa-AToW_onto/workflow_ontology/examples/kinetic_energ/kinetic_energy_instance.ttl
+https://cnherrera.github.io/Exa-AToW_onto/workflow_ontology/examples/kinetic_energy/kinetic_energy_instance.ttl
 
 
-### Or load the instance form local machine
+### b. Or load the instance form local machine
 
 You can load a TTL file from your local machine:
 
