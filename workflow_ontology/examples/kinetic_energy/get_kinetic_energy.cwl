@@ -2,31 +2,37 @@
 cwlVersion: v1.2
 class: CommandLineTool
 
-label: "Get Kinetic Energy"
-doc: "Computes kinetic energy = 0.5 * mass * velocity^2. Wraps the get_kinetic_energy Python function."
+requirements:
+  InlineJavascriptRequirement: {}
 
-baseCommand: [python3, get_kinetic_energy.py]
+baseCommand: python3
+
+arguments:
+  - prefix: -c
+    valueFrom: |
+      import sys
+      mass = float(sys.argv[1])
+      velocity = float(sys.argv[2])
+      kinetic_energy = 0.5 * mass * velocity ** 2
+      print(kinetic_energy)
 
 inputs:
   mass:
     type: float
-    label: "Mass (kg)"
-    doc: "Mass in kilograms"
     inputBinding:
-      prefix: --mass
       position: 1
+
   velocity:
     type: float
-    label: "Velocity (m/s)"
-    doc: "Velocity in meters per second"
     inputBinding:
-      prefix: --velocity
       position: 2
 
 outputs:
   kinetic_energy:
     type: float
-    label: "Kinetic Energy (J)"
-    doc: "Kinetic energy in joules"
     outputBinding:
-      glob: ke_output.json
+      glob: kinetic_energy_output.txt
+      loadContents: true
+      outputEval: $(parseFloat(self[0].contents.trim()))
+
+stdout: kinetic_energy_output.txt
