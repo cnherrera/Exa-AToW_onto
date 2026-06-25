@@ -12,10 +12,6 @@
 #        <https://w3id.org/Exa-AToW/exato-wf.ttl> .
 
 
-
-
-
-
 inst:step_get_kinetic_energy a owl:NamedIndividual,
         exato-wf-cwl:CWLWorkflowStep,
         exato-wf-cwl:CWLCommandLineTool,
