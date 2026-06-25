@@ -2,31 +2,37 @@
 cwlVersion: v1.2
 class: CommandLineTool
 
-label: "Get Speed"
-doc: "Computes speed = distance / time. Wraps the get_speed Python function."
+requirements:
+  InlineJavascriptRequirement: {}
 
-baseCommand: [python3, get_speed.py]
+baseCommand: python3
+
+arguments:
+  - prefix: -c
+    valueFrom: |
+      import sys
+      distance = float(sys.argv[1])
+      time = float(sys.argv[2])
+      speed = distance / time
+      print(speed)
 
 inputs:
   distance:
     type: float
-    label: "Distance (m)"
-    doc: "Distance in meters"
     inputBinding:
-      prefix: --distance
       position: 1
+
   time:
     type: float
-    label: "Time (s)"
-    doc: "Time in seconds"
     inputBinding:
-      prefix: --time
       position: 2
 
 outputs:
   speed:
     type: float
-    label: "Speed (m/s)"
-    doc: "Speed in meters per second"
     outputBinding:
-      glob: speed_output.json
+      glob: speed_output.txt
+      loadContents: true
+      outputEval: $(parseFloat(self[0].contents.trim()))
+
+stdout: speed_output.txt

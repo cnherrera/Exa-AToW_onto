@@ -87,7 +87,135 @@ Output   : kinetic_energy_instance.ttl
 Done — 152 triples written to kinetic_energy_instance.ttl
 ```
 
-### What the script generates
+### CWL files
+
+The three CWL files implement the workflow as `python3 -c` inline scripts. Each tool captures its result via `stdout` and reads it back as a `float` using `InlineJavascriptRequirement`.
+
+**`get_speed.cwl`** — computes `speed = distance / time`:
+
+```yaml
+cwlVersion: v1.2
+class: CommandLineTool
+
+requirements:
+  InlineJavascriptRequirement: {}
+
+baseCommand: python3
+
+arguments:
+  - prefix: -c
+    valueFrom: |
+      import sys
+      distance = float(sys.argv[1])
+      time = float(sys.argv[2])
+      speed = distance / time
+      print(speed)
+
+inputs:
+  distance: { type: float, inputBinding: { position: 1 } }
+  time:     { type: float, inputBinding: { position: 2 } }
+
+outputs:
+  speed:
+    type: float
+    outputBinding:
+      glob: speed_output.txt
+      loadContents: true
+      outputEval: $(parseFloat(self[0].contents.trim()))
+
+stdout: speed_output.txt
+```
+
+**`get_kinetic_energy.cwl`** — computes `KE = 0.5 · mass · velocity²`:
+
+```yaml
+cwlVersion: v1.2
+class: CommandLineTool
+
+requirements:
+  InlineJavascriptRequirement: {}
+
+baseCommand: python3
+
+arguments:
+  - prefix: -c
+    valueFrom: |
+      import sys
+      mass = float(sys.argv[1])
+      velocity = float(sys.argv[2])
+      kinetic_energy = 0.5 * mass * velocity ** 2
+      print(kinetic_energy)
+
+inputs:
+  mass:     { type: float, inputBinding: { position: 1 } }
+  velocity: { type: float, inputBinding: { position: 2 } }
+
+outputs:
+  kinetic_energy:
+    type: float
+    outputBinding:
+      glob: kinetic_energy_output.txt
+      loadContents: true
+      outputEval: $(parseFloat(self[0].contents.trim()))
+
+stdout: kinetic_energy_output.txt
+```
+
+**`my_kinetic_energy_workflow.cwl`** — wires the two steps together, passing `get_speed/speed` as `velocity` into `get_kinetic_energy`:
+
+```yaml
+cwlVersion: v1.2
+class: Workflow
+
+inputs:
+  distance: { type: float }
+  time:     { type: float }
+  mass:     { type: float }
+
+outputs:
+  kinetic_energy:
+    type: float
+    outputSource: get_kinetic_energy/kinetic_energy
+
+steps:
+  get_speed:
+    run: get_speed.cwl
+    in:
+      distance: distance
+      time: time
+    out: [speed]
+
+  get_kinetic_energy:
+    run: get_kinetic_energy.cwl
+    in:
+      mass:     mass
+      velocity: get_speed/speed
+    out: [kinetic_energy]
+```
+
+### Running the workflow
+
+Create an `inputs.yml` file:
+
+```yaml
+distance: 100.0
+time: 9.58
+mass: 70.0
+```
+
+Then run:
+
+```bash
+mkdir -p results && cwltool kinetic_energy_workflow.cwl inputs.yml > results/output.json
+```
+
+Validate the CWL workflow without executing:
+
+```bash
+cwltool --validate kinetic_energy_workflow.cwl
+```
+
+### What the converter generates
 
 | Individual | Type | Description |
 |---|---|---|
@@ -127,17 +255,28 @@ Data link: inst:step_get_speed_out_speed
 
 ## Step 2 — Visualise with onto-viewer.html
 
-Open `../../viewer/onto-viewer.html` in your browser.
+Open `../../viewer/onto-viewer.html` in your browser or from the web: 
 
-### Load the instance
-You can either open a ttl file online or upload it from your local machine:
-1. Click the **folder icon** in the top-left toolbar.
+[https://cnherrera.github.io/Exa-AToW_onto/tools/onto_visualization/onto-viewer.html](https://cnherrera.github.io/Exa-AToW_onto/tools/onto_visualization/onto-viewer.html)
+
+
+
+### Upload instance from the web (URL)
+
+Write the URL of the instance of the workflow in "TTL URL":  
+
+https://cnherrera.github.io/Exa-AToW_onto/workflow_ontology/examples/kinetic_energ/kinetic_energy_instance.ttl
+
+
+### Or load the instance form local machine
+
+You can load a TTL file from your local machine:
+
+1. Click the **folder icon** in the top-left toolbar to upload a local file, or click the **link icon** to enter a URL.
 2. Select `kinetic_energy_instance.ttl` from this folder.
 3. The graph renders automatically.
 
-> **Note:** The viewer will attempt to fetch the `owl:imports` URLs declared in the TTL. If you are offline or behind a firewall, the imports are silently skipped — the graph still renders correctly because the minimal TBox (classes and properties used in this instance) is embedded directly in the TTL.
-
-
+---
 
 ### Navigation
 
@@ -145,10 +284,47 @@ You can either open a ttl file online or upload it from your local machine:
 |---|---|
 | Pan | Click and drag on the canvas |
 | Zoom | Scroll wheel |
-| Inspect a node | Click on it — details appear in the right panel |
-| Show/hide instances | Toggle **Instances** in the toolbar |
-| Show/hide edge labels | Toggle **Edge labels** in the toolbar |
-| Fit to screen | Click the **⤢ Fit** button |
+| Inspect a node or edge | Click on it — details appear in the right panel |
+| Fit to screen | Click **⊞ Fit** in the toolbar |
+| Reset view | Click **↺ Reset** in the toolbar |
+
+---
+
+### Toolbar toggles
+
+| Toggle | Effect |
+|---|---|
+| **TBox** | Show/hide ontology classes and properties |
+| **Instances** | Show/hide individual instances (ABox) |
+| **Edge labels** | Show/hide predicate names on edges |
+| **Layout** | Switch between graph layout algorithms (e.g. dagre, cose) |
+
+---
+
+### Node details panel
+
+Click any node to open its detail panel on the right:
+
+- **Classes** — URI, comment, superclasses, subclasses, instances
+- **Instances** — URI, type, all outgoing properties and their values
+- **Imported concepts** — URI, comment, superclasses, subclasses, and which instances use them (see below)
+
+Click any pill in the panel to navigate directly to that node.
+
+---
+
+### Viewing imported ontology concepts
+
+The instance file uses classes and properties from external ontologies (e.g. `exato-wf:WorkflowStep`, `exato-wf-cwl:CWLWorkflow`). These are not embedded in the TTL to keep it readable, but you can load them on demand:
+
+1. Click **🔗 Imported Concepts** in the toolbar.
+2. The viewer detects which external namespaces are referenced by your instances and shows them as **clickable chips** — click one to add it as a URL to load.
+3. Enter the full URL of the ontology TTL for each namespace (you can add multiple).
+4. Click **Load & Show**.
+
+The viewer fetches each ontology, extracts only the classes and properties actually used in your instances, resolves their ancestor chain (`rdfs:subClassOf`), and injects them into the graph as **dashed round-rectangle nodes** coloured by branch. Edges labelled `type` connect each instance to its external class.
+
+To remove imported concepts from the graph, reopen the modal and click **Clear**.
 
 ---
 
