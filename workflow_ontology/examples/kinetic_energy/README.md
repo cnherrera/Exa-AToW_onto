@@ -36,7 +36,7 @@ def my_kinetic_energy_workflow(distance, time, mass):
 ## Folder contents
 
 ```
-examples/kinetic_energy/
+Exa-AToW_onto/workflow_ontology/examples/kinetic_energy/
 ├── kinetic_energy_workflow.cwl      ← main CWL Workflow (entry point)
 ├── get_speed.cwl                    ← CWL tool: speed = distance / time
 ├── get_kinetic_energy.cwl           ← CWL tool: KE = 0.5 · mass · velocity²
@@ -44,13 +44,20 @@ examples/kinetic_energy/
 └── README.md                        ← this file
 ```
 
-The conversion script and viewer live at the repo root:
+The conversion script at the repo root:
 
 ```
-├── tools/cwl_to_ttl.py              ← CWL → Turtle converter
-└── viewer/onto-viewer.html          ← browser-based ontology visualiser
+Exa-AToW_onto/workflow_ontology/
+└── tools/cwl_to_ttl.py              ← CWL → Turtle converter
+
 ```
 
+And the viewer live at the Exa-AToW repo root:
+
+```
+Exa-AToW_onto/tools/onto_visualization/
+└── /onto-viewer.html          ← browser-based ontology visualiser
+```
 ---
 
 ## Prerequisites
@@ -91,109 +98,14 @@ Done — 152 triples written to kinetic_energy_instance.ttl
 
 The three CWL files implement the workflow as `python3 -c` inline scripts. Each tool captures its result via `stdout` and reads it back as a `float` using `InlineJavascriptRequirement`.
 
-**`get_speed.cwl`** — computes `speed = distance / time`:
+**`get_speed.cwl`** — Workflow Step: computes `speed = distance / time`
 
-```yaml
-cwlVersion: v1.2
-class: CommandLineTool
+**`get_kinetic_energy.cwl`** — Workflow Step: computes `KE = 0.5 · mass · velocity²`
 
-requirements:
-  InlineJavascriptRequirement: {}
+**`kinetic_energy_workflow.cwl`** — Workflow: wires the two steps together, passing `get_speed/speed` as `velocity` into `get_kinetic_energy`
 
-baseCommand: python3
 
-arguments:
-  - prefix: -c
-    valueFrom: |
-      import sys
-      distance = float(sys.argv[1])
-      time = float(sys.argv[2])
-      speed = distance / time
-      print(speed)
-
-inputs:
-  distance: { type: float, inputBinding: { position: 1 } }
-  time:     { type: float, inputBinding: { position: 2 } }
-
-outputs:
-  speed:
-    type: float
-    outputBinding:
-      glob: speed_output.txt
-      loadContents: true
-      outputEval: $(parseFloat(self[0].contents.trim()))
-
-stdout: speed_output.txt
-```
-
-**`get_kinetic_energy.cwl`** — computes `KE = 0.5 · mass · velocity²`:
-
-```yaml
-cwlVersion: v1.2
-class: CommandLineTool
-
-requirements:
-  InlineJavascriptRequirement: {}
-
-baseCommand: python3
-
-arguments:
-  - prefix: -c
-    valueFrom: |
-      import sys
-      mass = float(sys.argv[1])
-      velocity = float(sys.argv[2])
-      kinetic_energy = 0.5 * mass * velocity ** 2
-      print(kinetic_energy)
-
-inputs:
-  mass:     { type: float, inputBinding: { position: 1 } }
-  velocity: { type: float, inputBinding: { position: 2 } }
-
-outputs:
-  kinetic_energy:
-    type: float
-    outputBinding:
-      glob: kinetic_energy_output.txt
-      loadContents: true
-      outputEval: $(parseFloat(self[0].contents.trim()))
-
-stdout: kinetic_energy_output.txt
-```
-
-**`my_kinetic_energy_workflow.cwl`** — wires the two steps together, passing `get_speed/speed` as `velocity` into `get_kinetic_energy`:
-
-```yaml
-cwlVersion: v1.2
-class: Workflow
-
-inputs:
-  distance: { type: float }
-  time:     { type: float }
-  mass:     { type: float }
-
-outputs:
-  kinetic_energy:
-    type: float
-    outputSource: get_kinetic_energy/kinetic_energy
-
-steps:
-  get_speed:
-    run: get_speed.cwl
-    in:
-      distance: distance
-      time: time
-    out: [speed]
-
-  get_kinetic_energy:
-    run: get_kinetic_energy.cwl
-    in:
-      mass:     mass
-      velocity: get_speed/speed
-    out: [kinetic_energy]
-```
-
-### Running the workflow
+### Running the workflow in CWL:
 
 Create an `inputs.yml` file:
 
@@ -222,8 +134,6 @@ cwltool --validate kinetic_energy_workflow.cwl
 | `inst:wf_Kinetic_Energy_Workflow` | `CWLWorkflow` | The workflow itself |
 | `inst:step_get_speed` | `CWLWorkflowStep` | Step 1 |
 | `inst:step_get_kinetic_energy` | `CWLWorkflowStep` | Step 2 |
-| `inst:tool_get_speed` | `CWLCommandLineTool` | Tool behind step 1 |
-| `inst:tool_get_kinetic_energy` | `CWLCommandLineTool` | Tool behind step 2 |
 | `inst:wf_input_distance/time/mass` | `InputParameter` | Workflow-level inputs |
 | `inst:wf_output_kinetic_energy` | `OutputParameter` | Workflow-level output |
 | `inst:step_*_in_*` / `inst:step_*_out_*` | `Input/OutputParameter` | Step-level parameters |
@@ -278,17 +188,6 @@ You can load a TTL file from your local machine:
 
 ---
 
-### Navigation
-
-| Action | How |
-|---|---|
-| Pan | Click and drag on the canvas |
-| Zoom | Scroll wheel |
-| Inspect a node or edge | Click on it — details appear in the right panel |
-| Fit to screen | Click **⊞ Fit** in the toolbar |
-| Reset view | Click **↺ Reset** in the toolbar |
-
----
 
 ### Toolbar toggles
 
