@@ -490,7 +490,8 @@ exato-hpc:FileSystem rdf:type owl:Class ;
         "Infrastructure de stockage partagée utilisée pour les données d'entrée/sortie et les points de sauvegarde dans les environnements HPC."@fr ;
     skos:prefLabel "File System"@en , "Système de fichiers"@fr .
 
-exato-hpc:isParallel rdf:type owl:DatatypeProperty , rdf:type owl:FunctionalProperty ;
+exato-hpc:isParallel rdf:type owl:DatatypeProperty ;
+    rdf:type owl:FunctionalProperty ;
     rdfs:domain exato-hpc:FileSystemTechnology ;
     rdfs:range xsd:boolean ;
     rdfs:comment
